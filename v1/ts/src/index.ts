@@ -3,8 +3,7 @@ import { p, Share } from './constants'
 function randomBigInt(max: bigint): bigint {
 	const bytes = Math.ceil(max.toString(2).length / 8);
 	while (true) {
-		let array;
-		array = new Uint8Array(bytes);
+		let array = new Uint8Array(bytes);
 		crypto.getRandomValues(array);
 
 		let r = 0n;
@@ -21,7 +20,8 @@ function generateShares(coeff: bigint[], n: number, p: bigint): Share[] {
 
 	for (let x = 1; x <= n; x++) {
 		let y = 0n;
-
+		
+		// horner's method of evaluating polynomials
 		for (let j = coeff.length - 1; j >= 0; j--) {
 			y = (y * BigInt(x) + coeff[j]) % p;
 		}
@@ -34,6 +34,7 @@ function generateShares(coeff: bigint[], n: number, p: bigint): Share[] {
 
 function split(secret: string, n: number, k: number) {
 	if (!(1 < k && k <= n)) throw new Error("Invalid threshold");
+	if (n > 255) throw new Error("Maximum number of shares (n) is 255");
 
 	const s = BigInt(secret) % p;
 	let coeff = [s];
@@ -47,4 +48,3 @@ function split(secret: string, n: number, k: number) {
 }
 
 console.log(split('0x9f3c0d2e1a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d', 5, 3));
-
